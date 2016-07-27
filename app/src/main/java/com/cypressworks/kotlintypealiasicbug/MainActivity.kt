@@ -2,8 +2,7 @@ package com.cypressworks.kotlintypealiasicbug
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.widget.Toast
-import kotlinx.android.synthetic.main.activity_main.*
+import rx.Observable
 
 class MainActivity : AppCompatActivity() {
 
@@ -11,13 +10,29 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val foo = Foo(Source())
-        Toast.makeText(this, foo.bar("hello"), Toast.LENGTH_SHORT).show()
-        textViewFoo.text = foo.bar("world")
+        asyncRx {
+            val flag = true
+            Observable.just("").awaitFirst()
+            bar(flag)
+        }
     }
 
-    class Source : Foo<String>.Source {
-        override fun invoke(p1: String) = p1
+    fun bar(flag: Boolean) {
     }
 
+}
+
+fun asyncRx(coroutine c: RxController.() -> Continuation<Unit>) {
+    RxController().c().resume(Unit)
+}
+
+class RxController {
+
+    suspend fun <V> Observable<V>.awaitFirst(x: Continuation<V>) {
+        this.first().subscribeWithContinuation(x)
+    }
+
+    private fun <V> Observable<V>.subscribeWithContinuation(x: Continuation<V>) {
+        subscribe(x::resume, x::resumeWithException)
+    }
 }
