@@ -1,0 +1,22 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven { url "https://dl.bintray.com/kotlin/kotlin-eap-1.1" }
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.2.0-alpha6'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION"
+        classpath "org.jetbrains.kotlin:kotlin-android-extensions:$KOTLIN_VERSION"
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        maven { url "https://dl.bintray.com/kotlin/kotlin-eap-1.1" }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
